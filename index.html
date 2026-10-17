@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Como você ensinaria o robô a arrumar o seu quarto? | Aprendizado de Máquina 3D</title>
+  <meta name="description" content="Jogo educativo 3D interativo para alunos do 6º ano aprenderem conceitos fundamentais de Inteligência Artificial e Aprendizado de Máquina Supervisionado na prática.">
+  
+  <!-- Tipografia Google Fonts Moderna e Amigável -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Three.js e OrbitControls Locais -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/OrbitControls.js"></script>
+</head>
+<body>
+
+  <!-- Canvas WebGL 3D -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ========================================== -->
+  <!-- 1. TELA INICIAL (BOAS-VINDAS & ACOLHIMENTO) -->
+  <!-- ========================================== -->
+  <div id="screen-welcome" class="screen-overlay">
+    <div class="welcome-card">
+      <div class="welcome-badge">🎓 6º Ano do Ensino Fundamental • Inteligência Artificial</div>
+      <h1 class="welcome-title">Como você ensinaria o robô a arrumar o seu quarto?</h1>
+      <p class="welcome-subtitle">
+        Conheça o <strong>Bipinho</strong>, um robô assistente curioso! Ele não nasceu sabendo o que é uma meia ou onde guardar um casaco.
+        Sua missão é ser o <strong>mentor de IA</strong>: ensine exemplos rotulados, mostre características e descubra como o Aprendizado de Máquina funciona!
+      </p>
+
+      <div class="welcome-features-grid">
+        <div class="feat-box">
+          <span class="feat-icon">🏷️</span>
+          <h4>Dados Rotulados</h4>
+          <p>Mostre o que cada objeto é e onde ele deve ser guardado.</p>
+        </div>
+        <div class="feat-box">
+          <span class="feat-icon">🔬</span>
+          <h4>Extração de Features</h4>
+          <p>O robô analisa tamanho, material, maleabilidade e função.</p>
+        </div>
+        <div class="feat-box">
+          <span class="feat-icon">🚀</span>
+          <h4>Marco dos 20 Itens</h4>
+          <p>Valide o modelo da IA: teste a autonomia solo do robô!</p>
+        </div>
+      </div>
+
+      <div class="welcome-actions">
+        <button id="btn-start-game" class="btn-primary-large">
+          <span class="btn-icon">🎮</span> Começar a Ensinar o Robô
+        </button>
+      </div>
+
+      <div class="welcome-controls-hint">
+        🎮 <strong>Controles:</strong> Teclas <strong>WASD / Setas</strong> para mover • <strong>Barra de Espaço</strong> para interagir • Também funciona por <strong>clique do mouse ou toque na tela</strong>!
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. HUD PRINCIPAL DO JOGO -->
+  <!-- ========================================== -->
+  <div id="screen-game" class="screen-hud hidden">
+    <!-- Barra Superior (Status & Progresso) -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="logo-icon">🤖</span>
+        <div class="brand-info">
+          <span class="game-name">Robô Arrumador IA</span>
+          <span id="badge-mode" class="badge-mode">📚 Modo: Ensino Guiado</span>
+        </div>
+      </div>
+
+      <div class="top-bar-center">
+        <!-- Indicador de Amostras Coletadas -->
+        <div class="stat-group">
+          <span class="stat-label">Amostras de Treino:</span>
+          <span id="sample-count" class="stat-value">0 / 36</span>
+        </div>
+        <!-- Barra de Acurácia da IA -->
+        <div class="stat-group accuracy-group">
+          <div class="accuracy-header">
+            <span class="stat-label">Acurácia Estimada da IA:</span>
+            <span id="accuracy-text" class="stat-value">16%</span>
+          </div>
+          <div class="accuracy-bar-track">
+            <div id="accuracy-bar" class="accuracy-bar-fill" style="width: 16%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <button id="btn-brain" class="btn-tool" title="Visualizar Memória e Cérebro da IA">
+          🧠 <span class="btn-tool-text">Cérebro IA</span>
+        </button>
+        <button id="btn-cosmetics" class="btn-tool" title="Customizar Acessórios do Robô">
+          🎨 <span class="btn-tool-text">Cosméticos</span>
+        </button>
+        <button id="btn-notebook" class="btn-tool" title="Caderno Científico de IA">
+          📖 <span class="btn-tool-text">Caderno</span>
+        </button>
+        <button id="btn-mute" class="btn-tool" title="Ligar/Desligar Efeitos Sonoros">
+          🔊 <span class="btn-tool-text">Som</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Indicador Flutuante de Interação no Chão -->
+    <div id="prompt-interact" class="prompt-interact hidden">
+      <div class="prompt-key">ESPAÇO</div>
+      <div class="prompt-text">
+        Ensinar robô sobre: <strong id="prompt-item-name">Objeto</strong>
+      </div>
+    </div>
+
+    <!-- Toast de Feedback Dinâmico da IA -->
+    <div id="toast-feedback" class="toast-feedback hidden">
+      <span class="toast-icon">✨</span>
+      <span id="toast-text" class="toast-text">Dica de Aprendizado</span>
+    </div>
+
+    <!-- Controles de Toque para Tablets e Telas Touch -->
+    <div id="touch-controls" class="touch-controls">
+      <div id="touch-dpad" class="touch-dpad">
+        <button class="dpad-btn dpad-up" data-dir="up">▲</button>
+        <div class="dpad-middle">
+          <button class="dpad-btn dpad-left" data-dir="left">◀</button>
+          <div class="dpad-center"></div>
+          <button class="dpad-btn dpad-right" data-dir="right">▶</button>
+        </div>
+        <button class="dpad-btn dpad-down" data-dir="down">▼</button>
+      </div>
+      <button id="btn-touch-action" class="btn-touch-action">
+        <span>🤖</span>
+        <span>Ensinar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 3. MODAL DE ENSINO E ROTULAGEM (FASE 2)   -->
+  <!-- ========================================== -->
+  <div id="modal-teach" class="modal-overlay hidden">
+    <div class="modal-card modal-teach-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-badge-step">FASE DE TREINAMENTO</span>
+          <h2 id="teach-item-name" class="modal-title">Nome do Objeto</h2>
+        </div>
+        <button class="btn-close-modal" aria-label="Fechar">&times;</button>
+      </div>
+
+      <div class="modal-body-teach">
+        <!-- Características Extraídas pela IA -->
+        <div class="features-section">
+          <h3 class="section-title">🔬 Características Extraídas (Features):</h3>
+          <div id="teach-item-features" class="features-grid">
+            <!-- Injetado via JS -->
+          </div>
+          <p id="teach-fun-fact" class="item-fun-fact">Dica e contexto do objeto...</p>
+        </div>
+
+        <!-- O que a IA está achando? (Inferência ao vivo) -->
+        <div class="ai-guess-section">
+          <h3 class="section-title">🤖 Visão da Inteligência Artificial:</h3>
+          <div id="teach-robot-guess" class="robot-guess-box">
+            <!-- Injetado via JS -->
+          </div>
+          <div class="confidence-meter">
+            <div class="conf-labels">
+              <span>Certeza da IA:</span>
+              <strong id="teach-confidence-text">45%</strong>
+            </div>
+            <div class="conf-track">
+              <div id="teach-confidence-bar" class="conf-fill" style="width: 45%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Destinos para Rotulagem do Jogador -->
+        <div class="destinations-section">
+          <h3 class="section-title">🏷️ Onde você ensina que este objeto deve ser guardado?</h3>
+          <div id="category-buttons-container" class="categories-grid">
+            <!-- 6 Botões de Categoria gerados via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. MODAL DO MARCO DOS 20 ITENS (FASE 4)   -->
+  <!-- ========================================== -->
+  <div id="modal-milestone-20" class="modal-overlay hidden">
+    <div class="modal-card modal-milestone-card">
+      <div class="milestone-badge">⭐ MOMENTO DA DECISÃO CIENTÍFICA</div>
+      <h2 class="milestone-title">🎉 Marco de 20 Itens Alcançado!</h2>
+      <p class="milestone-desc">
+        Parabéns, Cientista Mirim! Você alimentou o robô com <strong>20 amostras rotuladas</strong>. 
+        Na Ciência de Dados e Machine Learning, este é o momento de <strong>Validação e Teste de Generalização</strong>!
+      </p>
+
+      <div class="milestone-options-grid">
+        <div class="decision-card">
+          <div class="decision-icon">🚀</div>
+          <h3>Opção A: Fazer o Teste Solo Agora</h3>
+          <p>
+            Coloque o robô para arrumar o resto do quarto sozinho! Com 20 amostras, ele já acerta a maioria, 
+            mas pode cometer 1 ou 2 erros engraçados por falta de variedade.
+          </p>
+          <button id="btn-milestone-solo" class="btn-decision btn-solo">
+            Testar Autonomia Solo!
+          </button>
+        </div>
+
+        <div class="decision-card">
+          <div class="decision-icon">📚</div>
+          <h3>Opção B: Continuar Ensinando Mais</h3>
+          <p>
+            Ensine mais 10 a 15 itens raros e peculiares. Quanto mais variedade de cores e formatos ele conhecer, 
+            mais resistente a erros ele ficará (~95%+ de precisão)!
+          </p>
+          <button id="btn-milestone-teach" class="btn-decision btn-teach">
+            Continuar Ensinando!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. FEEDBACK DE ERRO DIVERTIDO DO ROBÔ      -->
+  <!-- ========================================== -->
+  <div id="modal-robot-error" class="modal-overlay hidden">
+    <div class="modal-card modal-error-card">
+      <div class="robot-face-large">🤖❓</div>
+      <h2 class="error-title">Ops! Uma Dúvida Engraçada da IA!</h2>
+      <div id="robot-error-item-name" class="error-item-title">Objeto em questão</div>
+      <p id="robot-error-msg" class="error-msg">
+        "Uh-oh! Essa meia é comestível ou vai na gaveta? Meus sensores ficaram confusos!"
+      </p>
+
+      <div class="error-explanation">
+        💡 <strong>Aprendizado por Reforço:</strong> Errar faz parte do aprendizado! 
+        Ao corrigir a IA, você ajuda o algoritmo a ajustar os pesos matemáticos das características.
+      </div>
+
+      <button id="btn-correct-robot" class="btn-primary-large">
+        ✨ Corrigir e Ensinar o Caminho Certo (+Reforço!)
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 6. PAINEL DO CÉREBRO DA IA (DATASET & PESOS)-->
+  <!-- ========================================== -->
+  <div id="panel-brain" class="side-panel hidden">
+    <div class="side-panel-header">
+      <div class="panel-title-wrap">
+        <span class="panel-icon">🧠</span>
+        <h3>Cérebro de Bipinho (Dataset)</h3>
+      </div>
+      <button class="btn-close-panel btn-close-modal">&times;</button>
+    </div>
+
+    <div class="side-panel-content">
+      <p class="panel-intro">
+        Veja como as amostras que você ensinou estão distribuídas na memória do robô:
+      </p>
+
+      <div id="brain-dataset-bars" class="brain-bars-list">
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+
+      <div class="brain-feature-weights">
+        <h4>⚖️ Pesos das Características (Features):</h4>
+        <ul>
+          <li><strong>Material:</strong> 30% de importância</li>
+          <li><strong>Maleabilidade:</strong> 30% de importância</li>
+          <li><strong>Função:</strong> 20% de importância</li>
+          <li><strong>Tamanho:</strong> 15% de importância</li>
+          <li><strong>Limpeza:</strong> 5% de importância</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 7. MODAL DE COSMÉTICOS & RECOMPENSAS      -->
+  <!-- ========================================== -->
+  <div id="modal-cosmetics" class="modal-overlay hidden">
+    <div class="modal-card modal-cosmetics-card">
+      <div class="modal-header">
+        <h2 class="modal-title">🎨 Acessórios do Bipinho</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <p class="cosmetics-desc">
+        Personalize seu robô assistente com itens conquistados durante o treinamento!
+      </p>
+
+      <div class="cosmetics-options">
+        <label class="cosmetic-item">
+          <input type="checkbox" id="cosmetic-propeller">
+          <div class="cosmetic-box">
+            <span class="cosmetic-icon">🚁</span>
+            <div class="cosmetic-info">
+              <strong>Antena Hélice</strong>
+              <p>Gira a toda velocidade enquanto ele pensa!</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="cosmetic-item">
+          <input type="checkbox" id="cosmetic-sunglasses">
+          <div class="cosmetic-box">
+            <span class="cosmetic-icon">🕶️</span>
+            <div class="cosmetic-info">
+              <strong>Óculos Escuros Maneiros</strong>
+              <p>Estilo futurista para o robô mais inteligente do quarto.</p>
+            </div>
+          </div>
+        </label>
+
+        <label class="cosmetic-item">
+          <input type="checkbox" id="cosmetic-cape">
+          <div class="cosmetic-box">
+            <span class="cosmetic-icon">🦸</span>
+            <div class="cosmetic-info">
+              <strong>Capa de Super-Herói</strong>
+              <p>Flutua com vento aerodinâmico em direção à faxina!</p>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 8. CADERNO CIENTÍFICO DE IA (PEDAGÓGICO)   -->
+  <!-- ========================================== -->
+  <div id="modal-notebook" class="modal-overlay hidden">
+    <div class="modal-card modal-notebook-card">
+      <div class="modal-header">
+        <h2 class="modal-title">📖 Caderno do Cientista de IA</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <div class="notebook-content">
+        <article class="concept-card">
+          <h3>1. O que é Aprendizado Supervisionado?</h3>
+          <p>
+            Imagine uma criança pequena aprendendo o que é uma fruta: os pais mostram uma maçã e dizem: <em>"Isso é uma maçã"</em>. 
+            Na Inteligência Artificial é exatamente igual! Nós fornecemos o objeto junto com o seu <strong>rótulo (label)</strong>.
+          </p>
+        </article>
+
+        <article class="concept-card">
+          <h3>2. O que são Características (Features)?</h3>
+          <p>
+            O computador não enxerga o mundo como humanos. Ele transforma tudo em números: tamanho, se amassa com facilidade, material de que é feito. 
+            Ao comparar as características de um objeto novo com os que já aprendeu, ele descobre a qual categoria pertence!
+          </p>
+        </article>
+
+        <article class="concept-card">
+          <h3>3. Por que variedade importa mais que repetição?</h3>
+          <p>
+            Se você só ensinar meias brancas, o robô pode achar que tudo que é branco é meia (até uma bolinha de pingue-pongue!). 
+            Ao ensinar meias de bolinhas, coloridas e de lã, o modelo aprende a focar no <strong>material e na maciez</strong>, e não só na cor!
+          </p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 9. TELA DE VITÓRIA & COMEMORAÇÃO           -->
+  <!-- ========================================== -->
+  <div id="screen-victory" class="screen-overlay hidden">
+    <div class="welcome-card victory-card">
+      <div class="victory-confetti">🎉 🏆 🌟</div>
+      <h1 class="welcome-title">Quarto 100% Organizado!</h1>
+      <p class="welcome-subtitle">
+        Você e Bipinho trabalharam em equipe! O quarto está brilhando e o robô agora é um mestre da organização!
+      </p>
+
+      <div class="victory-stats-grid">
+        <div class="stat-card">
+          <span class="stat-num" id="victory-samples">36</span>
+          <span class="stat-name">Amostras Rotuladas</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="victory-accuracy">96%</span>
+          <span class="stat-name">Acurácia Final da IA</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="victory-items-clean">36</span>
+          <span class="stat-name">Objetos Guardados</span>
+        </div>
+      </div>
+
+      <div class="victory-actions">
+        <button id="btn-restart-game" class="btn-primary-large">
+          🔄 Jogar Novamente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Principal da Aplicação -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

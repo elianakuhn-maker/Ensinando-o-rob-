@@ -1,0 +1,1102 @@
+/* ============================================================
+   ROBÔ ARRUMADOR IA - DESIGN SYSTEM & ESTILOS GERAIS
+   Projetado para alunos do 6º ano: vibrante, acolhedor e intuitivo
+   ============================================================ */
+
+:root {
+  --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Cores Temáticas */
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-accent: #06B6D4;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Superfícies e Vidros (Glassmorphism) */
+  --bg-dark-overlay: rgba(15, 23, 42, 0.78);
+  --bg-glass-card: rgba(30, 41, 59, 0.88);
+  --bg-glass-card-light: rgba(255, 255, 255, 0.94);
+  --border-glass: rgba(255, 255, 255, 0.16);
+
+  /* Sombras */
+  --shadow-lg: 0 16px 36px -8px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.45);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-main);
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+#game-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: block;
+}
+
+/* Utilitários */
+.hidden {
+  display: none !important;
+}
+
+/* ============================================================
+   1. TELAS DE SOBREPOSIÇÃO (WELCOME & VITÓRIA)
+   ============================================================ */
+
+.screen-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark-overlay);
+  backdrop-filter: blur(14px);
+  padding: 20px;
+}
+
+.welcome-card {
+  max-width: 760px;
+  width: 100%;
+  background: var(--bg-glass-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 28px;
+  padding: 38px 42px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.welcome-badge {
+  display: inline-block;
+  background: rgba(56, 189, 248, 0.16);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.welcome-title {
+  font-family: var(--font-heading);
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #CBD5E1;
+  margin-bottom: 28px;
+}
+
+.welcome-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.feat-box {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.feat-box:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.feat-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.feat-box h4 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #F1F5F9;
+  margin-bottom: 6px;
+}
+
+.feat-box p {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  line-height: 1.45;
+}
+
+.btn-primary-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 16px 36px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-primary-large:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55);
+}
+
+.welcome-controls-hint {
+  margin-top: 24px;
+  font-size: 0.88rem;
+  color: #94A3B8;
+}
+
+/* ============================================================
+   2. HUD SUPERIOR (STATUS, ACURÁCIA & FERRAMENTAS)
+   ============================================================ */
+
+.screen-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.top-bar {
+  pointer-events: auto;
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 10px 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-name {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #F8FAFC;
+}
+
+.badge-mode {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  width: fit-content;
+  margin-top: 2px;
+}
+
+.top-bar-center {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.stat-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #38BDF8;
+}
+
+.accuracy-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 170px;
+}
+
+.accuracy-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.accuracy-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.accuracy-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F59E0B 0%, #10B981 100%);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-tool {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #F1F5F9;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.btn-tool:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   3. PROMPT DE INTERAÇÃO FLUTUANTE & TOAST
+   ============================================================ */
+
+.prompt-interact {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+  padding: 8px 20px 8px 10px;
+  animation: bounceSoft 2s infinite ease-in-out;
+}
+
+.prompt-key {
+  background: #38BDF8;
+  color: #0F172A;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.prompt-text {
+  font-size: 0.95rem;
+  color: #F1F5F9;
+}
+
+.toast-feedback {
+  pointer-events: auto;
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid #38BDF8;
+  box-shadow: var(--shadow-glow);
+  padding: 12px 24px;
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast-feedback.toast-active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+}
+
+.toast-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #F8FAFC;
+}
+
+/* ============================================================
+   4. MODAIS DO JOGO (GLASSMORPHISM CARTOON)
+   ============================================================ */
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+}
+
+.modal-card {
+  background: var(--bg-glass-card);
+  border: 1px solid var(--border-glass);
+  border-radius: 26px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  max-width: 680px;
+  width: 100%;
+  animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.modal-badge-step {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #38BDF8;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #CBD5E1;
+  font-size: 1.6rem;
+  line-height: 1;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #94A3B8;
+  margin-bottom: 10px;
+}
+
+/* Modal de Ensino: Features & Categorias */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.feature-tag {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: #E2E8F0;
+}
+
+.item-fun-fact {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  background: rgba(56, 189, 248, 0.08);
+  border-left: 3px solid #38BDF8;
+  padding: 8px 12px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 18px;
+}
+
+.robot-guess-box {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+
+.robot-speech-bubble {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bot-avatar {
+  font-size: 2rem;
+}
+
+.bot-reason {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+.confidence-meter {
+  margin-bottom: 20px;
+}
+
+.conf-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #94A3B8;
+  margin-bottom: 4px;
+}
+
+.conf-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.conf-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+/* Grid de Botões dos 6 Destinos */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.btn-category {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid var(--cat-color);
+  color: #FFFFFF;
+  padding: 12px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+  text-align: left;
+}
+
+.btn-category:hover {
+  transform: translateY(-2px);
+  background: var(--cat-color);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.cat-key {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+
+.cat-icon {
+  font-size: 1.4rem;
+}
+
+/* ============================================================
+   5. MODAL DO MARCO DOS 20 ITENS
+   ============================================================ */
+
+.modal-milestone-card {
+  max-width: 720px;
+  text-align: center;
+}
+
+.milestone-badge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.18);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.milestone-title {
+  font-family: var(--font-heading);
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.milestone-desc {
+  font-size: 1rem;
+  color: #CBD5E1;
+  line-height: 1.55;
+  margin-bottom: 28px;
+}
+
+.milestone-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  text-align: left;
+}
+
+.decision-card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.decision-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.decision-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+}
+
+.decision-card p {
+  font-size: 0.88rem;
+  color: #94A3B8;
+  line-height: 1.5;
+  margin-bottom: 22px;
+  flex-grow: 1;
+}
+
+.btn-decision {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.btn-solo {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+}
+
+.btn-teach {
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  color: #FFFFFF;
+}
+
+.btn-decision:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* ============================================================
+   6. MODAL DE ERRO DIVERTIDO & REFORÇO
+   ============================================================ */
+
+.modal-error-card {
+  max-width: 580px;
+  text-align: center;
+}
+
+.robot-face-large {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+  animation: shakeSoft 0.8s ease-in-out infinite alternate;
+}
+
+.error-title {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #F87171;
+  margin-bottom: 8px;
+}
+
+.error-item-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #FBBF24;
+  margin-bottom: 14px;
+}
+
+.error-msg {
+  font-size: 1rem;
+  color: #E2E8F0;
+  line-height: 1.6;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.error-explanation {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid #10B981;
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+/* ============================================================
+   7. PAINEL LATERAL DO CÉREBRO DA IA
+   ============================================================ */
+
+.side-panel {
+  pointer-events: auto;
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  width: 380px;
+  max-height: calc(100vh - 100px);
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+  z-index: 150;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.side-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-icon {
+  font-size: 1.5rem;
+}
+
+.panel-title-wrap h3 {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.btn-close-panel {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.panel-intro {
+  font-size: 0.88rem;
+  color: #94A3B8;
+  margin-bottom: 18px;
+}
+
+.brain-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.brain-category-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brain-cat-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+  color: #E2E8F0;
+}
+
+.brain-progress-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.brain-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.brain-feature-weights {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.brain-feature-weights h4 {
+  font-size: 0.9rem;
+  color: #F1F5F9;
+  margin-bottom: 10px;
+}
+
+.brain-feature-weights ul {
+  list-style: none;
+  font-size: 0.84rem;
+  color: #94A3B8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ============================================================
+   8. COSMÉTICOS E CADERNO DE IA
+   ============================================================ */
+
+.cosmetics-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.cosmetic-item {
+  display: block;
+  cursor: pointer;
+}
+
+.cosmetic-item input {
+  display: none;
+}
+
+.cosmetic-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cosmetic-item input:checked + .cosmetic-box {
+  border-color: #38BDF8;
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.cosmetic-icon {
+  font-size: 2rem;
+}
+
+.cosmetic-info strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: #FFFFFF;
+}
+
+.cosmetic-info p {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.concept-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.concept-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: #38BDF8;
+  margin-bottom: 8px;
+}
+
+.concept-card p {
+  font-size: 0.9rem;
+  color: #CBD5E1;
+  line-height: 1.55;
+}
+
+/* ============================================================
+   9. TELA DE VITÓRIA E COMEMORAÇÃO
+   ============================================================ */
+
+.victory-card {
+  max-width: 640px;
+}
+
+.victory-confetti {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.victory-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 18px 12px;
+}
+
+.stat-num {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #10B981;
+  display: block;
+}
+
+.stat-name {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ============================================================
+   10. CONTROLES DE TOQUE (TABLETS E CELULARES)
+   ============================================================ */
+
+.touch-controls {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.touch-dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dpad-middle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dpad-center {
+  width: 44px;
+  height: 44px;
+}
+
+.dpad-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #F8FAFC;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dpad-btn:active {
+  background: #3B82F6;
+}
+
+.btn-touch-action {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  border: 2px solid #93C5FD;
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+}
+
+.btn-touch-action:active {
+  transform: scale(0.92);
+}
+
+/* Responsividade */
+@media (min-width: 900px) {
+  .touch-controls {
+    display: none; /* Em computadores normais, oculta controles de toque para manter a tela limpa */
+  }
+}
+
+@media (max-width: 600px) {
+  .top-bar-center {
+    display: none;
+  }
+  .btn-tool-text {
+    display: none;
+  }
+}
+
+/* Animações */
+@keyframes popIn {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  0% { transform: translateX(30px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bounceSoft {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+
+@keyframes shakeSoft {
+  0% { transform: rotate(-5deg); }
+  100% { transform: rotate(5deg); }
+}
